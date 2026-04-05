@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import Header from "./Header";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface LayoutProps {

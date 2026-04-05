@@ -13,6 +13,12 @@ const authApi = {
     },
     getMe: () => {
         return axiosClient.get('/auth/me');
+    },
+    forgotPassword: (email: string) => {
+        return axiosClient.post('/auth/forgot-password', { email });
+    },
+    resetPassword: (data: any) => {
+        return axiosClient.post('/auth/reset-password', data);
     }
 }
 

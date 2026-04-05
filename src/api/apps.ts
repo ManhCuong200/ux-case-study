@@ -1,16 +1,22 @@
 import axiosClient from "./axiosClient";
-import type { App, CreateAppDto } from "@/shared/types";
 
 const appsApi = {
     getAll: () => {
-        return axiosClient.get<App[]>('/apps');
+        return axiosClient.get("/apps");
     },
-    getOne: (id: number) => {
-        return axiosClient.get<App>(`/apps/${id}`);
+    getById: (id: number) => {
+        return axiosClient.get(`/apps/${id}`);
     },
-    create: (data: CreateAppDto) => {
-        return axiosClient.post<App>('/apps', data);
+    create: (formData: FormData) => {
+        return axiosClient.post("/apps", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+    },
+    delete: (id: number) => {
+        return axiosClient.delete(`/apps/${id}`);
     }
-}
+};
 
 export default appsApi;

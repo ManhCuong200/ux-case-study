@@ -75,9 +75,12 @@ const Login = ({ register, errors, loading, error, onLogin }: LoginProps) => {
                 <Label htmlFor="password" className="text-[11px] font-bold tracking-widest text-slate-500 uppercase">
                   Password
                 </Label>
-                <a href="#" className="text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                <Link 
+                  to="/forgot-password" 
+                  className="text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                >
                   Forgot Password
-                </a>
+                </Link>
               </div>
               <Input 
                 id="password" 

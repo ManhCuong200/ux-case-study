@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "@/utils/schema"
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth } from "@/hooks/useAuth"
 import Login from "@/components/auth/login"
 import type { LoginData } from "@/shared/types"
 
@@ -27,7 +27,7 @@ const LoginPage = () => {
 
         try {
             await login(data)
-            navigate("/")
+            navigate("/dashboard")
         } catch (err: any) {
             setError(err.response?.data?.message || "Invalid email or password")
         } finally {
