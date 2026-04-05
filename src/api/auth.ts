@@ -10,6 +10,9 @@ const authApi = {
     },
     refresh: (refreshToken: string) => {
         return axiosClient.post<Pick<LoginResponse, 'accessToken'>>('/auth/refresh', { refreshToken });
+    },
+    getMe: () => {
+        return axiosClient.get('/auth/me');
     }
 }
 

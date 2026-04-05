@@ -8,6 +8,8 @@ interface AuthContextType {
   login: (credentials: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
+  setSession: (accessToken: string, refreshToken: string, user?: User) => Promise<void>;
+  checkUserSession: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -19,14 +21,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Khôi phục user từ token (nếu có) khi load trang
   useEffect(() => {
+    // 1. Kiểm tra URL xem có token từ Google trả về không
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("accessToken");
+    const urlRefreshToken = params.get("refreshToken");
+
+    if (urlToken && urlRefreshToken) {
+      setSession(urlToken, urlRefreshToken);
+      // Xóa query params trên URL cho sạch
+      window.history.replaceState({}, document.title, "/");
+      return;
+    }
+
+    // 2. Nếu không có ở URL, kiểm tra ở localStorage
     const token = localStorage.getItem("access_token");
     if (token) {
-      // Ở đây ta có thể gọi API để lấy thông tin user hiện tại (/auth/profile)
-      // Tạm thời set user bằng một object rỗng để đánh dấu đã login
-      setUser({} as User); 
+      checkUserSession();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
+
+  const checkUserSession = async () => {
+    try {
+      const res = await authApi.getMe();
+      setUser(res.data);
+    } catch (e) {
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (credentials: any) => {
     const res = await authApi.login(credentials);
@@ -45,6 +70,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const setSession = async (accessToken: string, refreshToken: string, user?: User) => {
+    localStorage.setItem("access_token", accessToken);
+    localStorage.setItem("refresh_token", refreshToken);
+    if (user) {
+      setUser(user);
+      setLoading(false);
+    } else {
+      await checkUserSession();
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -53,6 +89,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        setSession,
+        checkUserSession,
         isAuthenticated: !!user,
       }}
     >

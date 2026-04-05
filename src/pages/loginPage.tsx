@@ -1,28 +1,32 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { loginSchema } from "@/utils/schema"
 import { useAuth } from "@/contexts/AuthContext"
 import Login from "@/components/auth/login"
+import type { LoginData } from "@/shared/types"
 
 const LoginPage = () => {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const navigate = useNavigate()
     const { login } = useAuth()
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!email || !password) {
-            setError("Please fill in all fields")
-            return
-        }
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginData>({
+        resolver: zodResolver(loginSchema)
+    })
 
+    const onSubmit = async (data: LoginData) => {
         setLoading(true)
         setError("")
 
         try {
-            await login({ email, password })
+            await login(data)
             navigate("/")
         } catch (err: any) {
             setError(err.response?.data?.message || "Invalid email or password")
@@ -33,13 +37,11 @@ const LoginPage = () => {
 
     return (
         <Login 
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
+            register={register}
+            errors={errors}
             loading={loading}
             error={error}
-            onLogin={handleLogin}
+            onLogin={handleSubmit(onSubmit)}
         />
     )
 }

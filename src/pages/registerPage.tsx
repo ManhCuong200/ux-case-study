@@ -1,34 +1,38 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { registerSchema } from "@/utils/schema"
 import { useAuth } from "@/contexts/AuthContext"
 import Register from "@/components/auth/register"
+import type { RegisterData } from "@/shared/types"
 
 const RegisterPage = () => {
-    const [fullName, setFullName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [confirmPassword, setConfirmPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const navigate = useNavigate()
-    const { register } = useAuth()
+    const { register: registerUser } = useAuth()
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!fullName || !email || !password || !confirmPassword) {
-            setError("Please fill in all fields")
-            return
-        }
-        if (password !== confirmPassword) {
-            setError("Passwords do not match")
-            return
-        }
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm<any>({
+        resolver: zodResolver(registerSchema)
+    })
 
+    const onSubmit = async (data: any) => {
         setLoading(true)
         setError("")
 
         try {
-            await register({ fullName, email, password })
+            await registerUser({
+                fullName: data.fullName,
+                email: data.email,
+                password: data.password
+            } as RegisterData)
             navigate("/login")
         } catch (err: any) {
             setError(err.response?.data?.message || "Registration failed. Try again.")
@@ -39,17 +43,13 @@ const RegisterPage = () => {
 
     return (
         <Register 
-            fullName={fullName}
-            setFullName={setFullName}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            confirmPassword={confirmPassword}
-            setConfirmPassword={setConfirmPassword}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
             loading={loading}
             error={error}
-            onRegister={handleRegister}
+            onRegister={handleSubmit(onSubmit)}
         />
     )
 }
