@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema } from "@/utils/schema"
 import { useAuth } from "@/hooks/useAuth"
-import Register from "@/components/auth/register"
+import Register from "@/components/auth/Register"
 import type { RegisterData } from "@/shared/types"
 
 const RegisterPage = () => {

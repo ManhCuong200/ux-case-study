@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "@/utils/schema"
 import { useAuth } from "@/hooks/useAuth"
-import Login from "@/components/auth/login"
+import Login from "@/components/auth/Login"
 import type { LoginData } from "@/shared/types"
 
 const LoginPage = () => {

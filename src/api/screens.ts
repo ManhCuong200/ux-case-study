@@ -10,6 +10,9 @@ const screensApi = {
                 "Content-Type": "multipart/form-data",
             },
         });
+    },
+    getById: (id: number) => {
+        return axiosClient.get(`/screens/${id}`);
     }
 };
 

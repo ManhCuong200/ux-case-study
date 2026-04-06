@@ -9,6 +9,9 @@ const hotspotsApi = {
     },
     delete: (id: number) => {
         return axiosClient.delete(`/hotspots/${id}`);
+    },
+    createBulk: (hotspots: any[]) => {
+        return axiosClient.post('/hotspots/bulk', hotspots);
     }
 };
 
