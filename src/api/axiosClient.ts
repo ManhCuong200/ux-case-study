@@ -19,7 +19,13 @@ axiosClient.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry) {
+        
+        // Skip interceptor for Login/Register calls to prevent reloads on failures
+        if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register')) {
+            return Promise.reject(error);
+        }
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
                 const refreshToken = localStorage.getItem('refresh_token');

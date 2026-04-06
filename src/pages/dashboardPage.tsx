@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import appsApi from "@/api/apps";
 import Dashboard from "@/components/dashboard/Dashboard";
 import CreateAppModal from "@/components/dashboard/CreateAppModal";
+import DeleteModal from "@/components/dashboard/DeleteModal";
 import { toast } from "sonner";
 
 const DashboardPage = () => {
@@ -10,9 +11,11 @@ const DashboardPage = () => {
     const [apps, setApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedAppId, setSelectedAppId] = useState<number | null>(null);
     const navigate = useNavigate();
 
-    // Form State (Moved from Component to Page)
+    // Form State
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -35,7 +38,7 @@ const DashboardPage = () => {
         fetchApps();
     }, []);
 
-    // Handlers (Controller Logic)
+    // Handlers
     const handleFileChange = (file: File | null) => {
         if (file) {
             setThumbnail(file);
@@ -59,8 +62,7 @@ const DashboardPage = () => {
 
             const res = await appsApi.create(formData);
             toast.success("New research project launched!");
-            
-            // Update UI
+
             setApps([res.data, ...apps]);
             
             // Reset Form & Close
@@ -76,33 +78,55 @@ const DashboardPage = () => {
         }
     };
 
+    const handleDeleteClick = (id: number) => {
+        setSelectedAppId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteApp = async () => {
+        if (!selectedAppId) return;
+        try {
+            await appsApi.delete(selectedAppId);
+            toast.success("Research project deleted successfully");
+            setApps(apps.filter((app) => app.id !== selectedAppId));
+            setIsDeleteModalOpen(false);
+            setSelectedAppId(null);
+        } catch (error) {
+            toast.error("Failed to delete research project");
+        }
+    };
+
     const handleAppClick = (id: number) => {
         navigate(`/apps/${id}`);
     };
 
     return (
         <>
-            <Dashboard 
+            <Dashboard
                 apps={apps}
                 loading={loading}
                 onCreateClick={() => setIsModalOpen(true)}
                 onAppClick={handleAppClick}
+                onDeleteClick={handleDeleteClick}
             />
-            
-            <CreateAppModal 
+
+            <CreateAppModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                // Form Props
                 name={name}
                 setName={setName}
                 description={description}
                 setDescription={setDescription}
-                thumbnail={thumbnail}
                 preview={preview}
                 loading={isSubmitting}
-                // Handler Props
                 onFileChange={handleFileChange}
                 onSubmit={handleCreateApp}
+            />
+
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDeleteApp}
             />
         </>
     );

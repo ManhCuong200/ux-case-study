@@ -7,9 +7,10 @@ interface DashboardProps {
     loading: boolean;
     onCreateClick: () => void;
     onAppClick: (id: number) => void;
+    onDeleteClick: (id: number) => void;
 }
 
-const Dashboard = ({ apps, loading, onCreateClick, onAppClick }: DashboardProps) => {
+const Dashboard = ({ apps, loading, onCreateClick, onAppClick, onDeleteClick }: DashboardProps) => {
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
             {/* Top Section */}
@@ -45,7 +46,11 @@ const Dashboard = ({ apps, loading, onCreateClick, onAppClick }: DashboardProps)
                         <AppCard 
                             key={app.id} 
                             app={app} 
-                            onClick={() => onAppClick(app.id)} 
+                            onClick={() => onAppClick(app.id)}
+                            onDelete={(id, e) => {
+                                e.stopPropagation();
+                                onDeleteClick(id);
+                            }}
                         />
                     ))}
                 </div>

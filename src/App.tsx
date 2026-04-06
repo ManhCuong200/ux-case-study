@@ -4,6 +4,7 @@ import RegisterPage from "./pages/registerPage"
 import ForgotPasswordPage from "./pages/forgotPasswordPage"
 import DashboardPage from "./pages/dashboardPage"
 import ProfilePage from "./pages/profilePage"
+import ProjectDetailPage from "./pages/ProjectDetailPage"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import Layout from "./components/common/Layout"
 import { Toaster } from "sonner"
@@ -41,6 +42,14 @@ function App() {
             element={
               <Layout>
                 <ProfilePage />
+              </Layout>
+            } 
+          />
+          <Route 
+            path="/apps/:id" 
+            element={
+              <Layout>
+                <ProjectDetailPage />
               </Layout>
             } 
           />
