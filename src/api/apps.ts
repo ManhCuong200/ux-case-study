@@ -14,6 +14,9 @@ const appsApi = {
             },
         });
     },
+    update: (id: number, data: any) => {
+        return axiosClient.patch(`/apps/${id}`, data);
+    },
     delete: (id: number) => {
         return axiosClient.delete(`/apps/${id}`);
     }

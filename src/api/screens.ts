@@ -13,6 +13,12 @@ const screensApi = {
     },
     getById: (id: number) => {
         return axiosClient.get(`/screens/${id}`);
+    },
+    update: (id: number, data: any) => {
+        return axiosClient.patch(`/screens/${id}`, data);
+    },
+    delete: (id: number) => {
+        return axiosClient.delete(`/screens/${id}`);
     }
 };
 

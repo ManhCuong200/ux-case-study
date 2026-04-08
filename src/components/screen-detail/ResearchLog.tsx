@@ -1,11 +1,12 @@
-import { Sparkles, Info, Trash2 } from "lucide-react";
+import { Sparkles, Info, Trash2, Edit2 } from "lucide-react";
 
 interface ResearchLogProps {
     hotspots: any[];
     onDelete: (id: number) => void;
+    onEdit: (hotspot: any) => void;
 }
 
-const ResearchLog = ({ hotspots, onDelete }: ResearchLogProps) => {
+const ResearchLog = ({ hotspots, onDelete, onEdit }: ResearchLogProps) => {
     return (
         <div className="w-full lg:w-96 space-y-6">
             <div className="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm">
@@ -35,12 +36,20 @@ const ResearchLog = ({ hotspots, onDelete }: ResearchLogProps) => {
                                         <h4 className="font-bold text-slate-900 text-sm">{h.title}</h4>
                                         <p className="text-xs text-slate-500 font-medium leading-relaxed">{h.content}</p>
                                     </div>
-                                    <button 
-                                        onClick={() => onDelete(h.id)}
-                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:bg-red-50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
+                                    <div className="flex flex-col gap-1 items-center">
+                                        <button 
+                                            onClick={() => onEdit(h)}
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:bg-blue-50 hover:text-blue-500 transition-colors opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Edit2 size={14} />
+                                        </button>
+                                        <button 
+                                            onClick={() => onDelete(h.id)}
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:bg-red-50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))

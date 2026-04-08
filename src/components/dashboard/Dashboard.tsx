@@ -8,9 +8,10 @@ interface DashboardProps {
     onCreateClick: () => void;
     onAppClick: (id: number) => void;
     onDeleteClick: (id: number) => void;
+    onEditClick: (app: any) => void;
 }
 
-const Dashboard = ({ apps, loading, onCreateClick, onAppClick, onDeleteClick }: DashboardProps) => {
+const Dashboard = ({ apps, loading, onCreateClick, onAppClick, onDeleteClick, onEditClick }: DashboardProps) => {
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
             {/* Top Section */}
@@ -50,6 +51,10 @@ const Dashboard = ({ apps, loading, onCreateClick, onAppClick, onDeleteClick }: 
                             onDelete={(id, e) => {
                                 e.stopPropagation();
                                 onDeleteClick(id);
+                            }}
+                            onEdit={(app, e) => {
+                                e.stopPropagation();
+                                onEditClick(app);
                             }}
                         />
                     ))}

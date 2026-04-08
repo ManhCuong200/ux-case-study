@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Rocket, Image as ImageIcon, X } from "lucide-react";
+import { Plus, Image as ImageIcon, X } from "lucide-react";
 
 interface CreateAppModalProps {
     isOpen: boolean;
@@ -15,6 +15,7 @@ interface CreateAppModalProps {
     setDescription: (val: string) => void;
     preview: string | null;
     loading: boolean;
+    isEditing?: boolean;
     onFileChange: (file: File | null) => void;
     onSubmit: (e: React.FormEvent) => Promise<void>;
 }
@@ -28,6 +29,7 @@ const CreateAppModal = ({
     setDescription,
     preview,
     loading,
+    isEditing,
     onFileChange,
     onSubmit
 }: CreateAppModalProps) => {
@@ -47,14 +49,16 @@ const CreateAppModal = ({
                 <form onSubmit={onSubmit}>
                     <div className="p-8 space-y-6">
                         <DialogHeader className="space-y-3">
-                            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-2">
-                                <Rocket size={24} />
+                            <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-900 mb-2">
+                                <Plus size={24} />
                             </div>
                             <DialogTitle className="text-2xl font-bold text-slate-900">
-                                Launch New Research
+                                {isEditing ? "Edit Project Details" : "New Research Project"}
                             </DialogTitle>
                             <DialogDescription className="text-slate-500 font-medium leading-relaxed">
-                                Start identifying UX flows and pain points by creating a new application case study.
+                                {isEditing 
+                                    ? "Update your project's name and description."
+                                    : "Create a new project to start managing your UX research mockups."}
                             </DialogDescription>
                         </DialogHeader>
 
@@ -147,9 +151,9 @@ const CreateAppModal = ({
                         <Button
                             type="submit"
                             disabled={loading || !name}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-xl font-bold shadow-lg shadow-blue-100 transition-all active:scale-95"
+                            className="bg-slate-900 hover:bg-black text-white px-8 rounded-xl font-bold shadow-sm transition-all active:scale-95"
                         >
-                            {loading ? "Launching..." : "Launch Research"}
+                            {loading ? "Processing..." : (isEditing ? "Save Changes" : "Create Project")}
                         </Button>
                     </DialogFooter>
                 </form>

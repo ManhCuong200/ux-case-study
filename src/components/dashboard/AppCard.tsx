@@ -1,4 +1,4 @@
-import { Calendar, Layers, Trash2 } from "lucide-react";
+import { Calendar, Layers, Trash2, Edit2 } from "lucide-react";
 
 interface AppCardProps {
   app: {
@@ -10,9 +10,10 @@ interface AppCardProps {
   };
   onClick: (id: number) => void;
   onDelete: (id: number, e: React.MouseEvent) => void;
+  onEdit: (app: any, e: React.MouseEvent) => void;
 }
 
-const AppCard = ({ app, onClick, onDelete }: AppCardProps) => {
+const AppCard = ({ app, onClick, onDelete, onEdit }: AppCardProps) => {
   const formatDate = (dateInput?: string | Date) => {
     if (!dateInput) return "Recently";
     const date = new Date(dateInput);
@@ -45,12 +46,19 @@ const AppCard = ({ app, onClick, onDelete }: AppCardProps) => {
         {/* Overlay on hover */}
         <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors duration-500" />
         
-        {/* Delete Button (Visible on Hover) */}
-        <div 
-          onClick={(e) => onDelete(app.id, e)}
-          className="absolute top-4 right-4 h-10 w-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-500 hover:text-white border border-white/30"
-        >
-          <Trash2 size={18} />
+        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <div 
+            onClick={(e) => onEdit(app, e)}
+            className="h-10 w-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-blue-500 hover:text-white border border-white/30 transition-all"
+          >
+            <Edit2 size={18} />
+          </div>
+          <div 
+            onClick={(e) => onDelete(app.id, e)}
+            className="h-10 w-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white hover:bg-red-500 hover:text-white border border-white/30 transition-all"
+          >
+            <Trash2 size={18} />
+          </div>
         </div>
       </div>
 

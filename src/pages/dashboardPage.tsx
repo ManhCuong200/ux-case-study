@@ -13,6 +13,7 @@ const DashboardPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedAppId, setSelectedAppId] = useState<number | null>(null);
+    const [editingApp, setEditingApp] = useState<any>(null);
     const navigate = useNavigate();
 
     // Form State
@@ -49,33 +50,51 @@ const DashboardPage = () => {
         }
     };
 
+    const handleEditAppClick = (app: any) => {
+        setEditingApp(app);
+        setName(app.name);
+        setDescription(app.description || "");
+        setPreview(app.logo_url || null);
+        setIsModalOpen(true);
+    };
+
     const handleCreateApp = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const formData = new FormData();
-            formData.append("name", name);
-            formData.append("description", description);
-            if (thumbnail) {
-                formData.append("thumbnail", thumbnail);
+            if (editingApp) {
+                const res = await appsApi.update(editingApp.id, { name, description });
+                setApps(apps.map(a => a.id === editingApp.id ? res.data : a));
+                toast.success("Project updated successfully!");
+            } else {
+                const formData = new FormData();
+                formData.append("name", name);
+                formData.append("description", description);
+                if (thumbnail) {
+                    formData.append("thumbnail", thumbnail);
+                }
+
+                const res = await appsApi.create(formData);
+                toast.success("New research project launched!");
+                setApps([res.data, ...apps]);
             }
-
-            const res = await appsApi.create(formData);
-            toast.success("New research project launched!");
-
-            setApps([res.data, ...apps]);
             
             // Reset Form & Close
-            setName("");
-            setDescription("");
-            setThumbnail(null);
-            setPreview(null);
-            setIsModalOpen(false);
+            handleCloseModal();
         } catch (error) {
-            toast.error("Failed to create project");
+            toast.error(editingApp ? "Failed to update project" : "Failed to create project");
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setName("");
+        setDescription("");
+        setThumbnail(null);
+        setPreview(null);
+        setEditingApp(null);
     };
 
     const handleDeleteClick = (id: number) => {
@@ -108,17 +127,19 @@ const DashboardPage = () => {
                 onCreateClick={() => setIsModalOpen(true)}
                 onAppClick={handleAppClick}
                 onDeleteClick={handleDeleteClick}
+                onEditClick={handleEditAppClick}
             />
 
             <CreateAppModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleCloseModal}
                 name={name}
                 setName={setName}
                 description={description}
                 setDescription={setDescription}
                 preview={preview}
                 loading={isSubmitting}
+                isEditing={!!editingApp}
                 onFileChange={handleFileChange}
                 onSubmit={handleCreateApp}
             />

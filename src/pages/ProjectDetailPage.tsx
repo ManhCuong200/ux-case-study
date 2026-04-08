@@ -49,10 +49,10 @@ const ProjectDetailPage = () => {
         try {
             setUploading(true);
             await screensApi.upload(formData);
-            toast.success("New screen blueprint added!");
+            toast.success("Screen uploaded successfully!");
             fetchAppDetail();
         } catch (error) {
-            toast.error("Blueprint upload failed");
+            toast.error("Upload failed");
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = "";
@@ -62,9 +62,9 @@ const ProjectDetailPage = () => {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-                <p className="text-slate-400 font-bold tracking-widest text-xs uppercase animate-pulse">
-                    Decrypting Project Data...
+                <Loader2 className="w-12 h-12 text-slate-300 animate-spin" />
+                <p className="text-slate-400 font-bold tracking-widest text-[10px] uppercase animate-pulse">
+                    Loading Project Details...
                 </p>
             </div>
         );
@@ -97,8 +97,8 @@ const ProjectDetailPage = () => {
 
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                        System Blueprints
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                        Project Screens
                         <span className="text-slate-300 font-medium">({app?.screens?.length || 0})</span>
                     </h2>
                 </div>

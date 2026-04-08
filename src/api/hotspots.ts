@@ -12,6 +12,9 @@ const hotspotsApi = {
     },
     createBulk: (hotspots: any[]) => {
         return axiosClient.post('/hotspots/bulk', hotspots);
+    },
+    update: (id: number, data: any) => {
+        return axiosClient.patch(`/hotspots/${id}`, data);
     }
 };
 

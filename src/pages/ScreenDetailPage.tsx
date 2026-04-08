@@ -27,6 +27,7 @@ const ScreenDetailPage = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [editingHotspot, setEditingHotspot] = useState<any>(null);
     
     const imageRef = useRef<HTMLImageElement>(null);
 
@@ -75,6 +76,14 @@ const ScreenDetailPage = () => {
         setIsModalOpen(true);
     };
 
+    const handleEditClick = (hotspot: any) => {
+        setEditingHotspot(hotspot);
+        setTitle(hotspot.title);
+        setContent(hotspot.content);
+        setNewPos({ x: hotspot.pos_x, y: hotspot.pos_y });
+        setIsModalOpen(true);
+    };
+
     const handleAddHotspot = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!screenId || !title || !content) return;
@@ -90,16 +99,23 @@ const ScreenDetailPage = () => {
                 screenId: parseInt(screenId)
             };
             
-            const res = await hotspotsApi.create(payload);
-            setHotspots([...hotspots, res.data]);
-            toast.success("Critical observation mapped!");
+            if (editingHotspot) {
+                const res = await hotspotsApi.update(editingHotspot.id, { title, content });
+                setHotspots(hotspots.map(h => h.id === editingHotspot.id ? res.data : h));
+                toast.success("Observation updated!");
+            } else {
+                const res = await hotspotsApi.create(payload);
+                setHotspots([...hotspots, res.data]);
+                toast.success("Critical observation mapped!");
+            }
             
             // Reset
             setIsModalOpen(false);
             setTitle("");
             setContent("");
+            setEditingHotspot(null);
         } catch (error) {
-            toast.error("Mapping failed");
+            toast.error(editingHotspot ? "Update failed" : "Mapping failed");
         } finally {
             setSubmitting(false);
         }
@@ -147,6 +163,29 @@ const ScreenDetailPage = () => {
         }
     };
 
+    const handleDeleteScreen = async () => {
+        if (!screenId || !window.confirm("Are you sure you want to permanently delete this blueprint?")) return;
+        try {
+            await screensApi.delete(parseInt(screenId));
+            toast.success("Blueprint purged from system.");
+            navigate(`/apps/${id}`);
+        } catch (error) {
+            toast.error("Deletion failed.");
+        }
+    };
+
+    const handleEditScreenName = async () => {
+        const newName = window.prompt("Enter new blueprint name:", screen?.name);
+        if (!newName || newName === screen?.name) return;
+        try {
+            const res = await screensApi.update(parseInt(screenId as string), { name: newName });
+            setScreen(res.data);
+            toast.success("Blueprint identity updated.");
+        } catch (error) {
+            toast.error("Rename failed.");
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -168,6 +207,8 @@ const ScreenDetailPage = () => {
                 onBack={() => navigate(`/apps/${id}`)}
                 onToggleAdding={() => setIsAdding(!isAdding)}
                 onAiScan={handleAiScan}
+                onEditName={handleEditScreenName}
+                onDeleteScreen={handleDeleteScreen}
             />
 
             <div className="flex flex-col lg:flex-row gap-8">
@@ -183,12 +224,18 @@ const ScreenDetailPage = () => {
                 <ResearchLog 
                     hotspots={hotspots}
                     onDelete={handleDeleteHotspot}
+                    onEdit={handleEditClick}
                 />
             </div>
 
             <AddHotspotModal 
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingHotspot(null);
+                    setTitle("");
+                    setContent("");
+                }}
                 onSubmit={handleAddHotspot}
                 title={title}
                 setTitle={setTitle}
