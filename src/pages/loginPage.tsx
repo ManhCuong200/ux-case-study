@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "@/utils/schema"
 import { useAuth } from "@/hooks/useAuth"
+import { AxiosError } from "axios"
 import Login from "@/components/auth/Login"
 import type { LoginData } from "@/shared/types"
 
@@ -27,7 +28,8 @@ const LoginPage = () => {
         try {
             await login(data)
             navigate("/dashboard")
-        } catch (err: any) {
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ message?: string }>;
             const message = err.response?.data?.message || "Invalid email or password"
 
             // Nếu thông báo lỗi chứa từ 'email' hoặc 'user' -> Hiện dưới ô Email

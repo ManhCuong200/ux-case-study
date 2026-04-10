@@ -4,16 +4,17 @@ import appsApi from "@/api/apps";
 import Dashboard from "@/components/dashboard/Dashboard";
 import CreateAppModal from "@/components/dashboard/CreateAppModal";
 import DeleteModal from "@/components/dashboard/DeleteModal";
+import type { App } from "@/shared/types";
 import { toast } from "sonner";
 
 const DashboardPage = () => {
     // List/Loading State
-    const [apps, setApps] = useState<any[]>([]);
+    const [apps, setApps] = useState<App[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedAppId, setSelectedAppId] = useState<number | null>(null);
-    const [editingApp, setEditingApp] = useState<any>(null);
+    const [editingApp, setEditingApp] = useState<App | null>(null);
     const navigate = useNavigate();
 
     // Form State
@@ -28,7 +29,7 @@ const DashboardPage = () => {
             setLoading(true);
             const res = await appsApi.getAll();
             setApps(res.data);
-        } catch (error) {
+        } catch {
             toast.error("Failed to fetch research projects");
         } finally {
             setLoading(false);
@@ -50,7 +51,7 @@ const DashboardPage = () => {
         }
     };
 
-    const handleEditAppClick = (app: any) => {
+    const handleEditAppClick = (app: App) => {
         setEditingApp(app);
         setName(app.name);
         setDescription(app.description || "");
@@ -81,7 +82,7 @@ const DashboardPage = () => {
             
             // Reset Form & Close
             handleCloseModal();
-        } catch (error) {
+        } catch {
             toast.error(editingApp ? "Failed to update project" : "Failed to create project");
         } finally {
             setIsSubmitting(false);
@@ -110,7 +111,7 @@ const DashboardPage = () => {
             setApps(apps.filter((app) => app.id !== selectedAppId));
             setIsDeleteModalOpen(false);
             setSelectedAppId(null);
-        } catch (error) {
+        } catch {
             toast.error("Failed to delete research project");
         }
     };

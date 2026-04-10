@@ -1,19 +1,20 @@
+import type { CreateHotspotDto } from "@/shared/types";
 import axiosClient from "./axiosClient";
 
 const hotspotsApi = {
     getByScreenId: (screenId: number) => {
         return axiosClient.get(`/hotspots/screen/${screenId}`);
     },
-    create: (data: any) => {
+    create: (data: CreateHotspotDto) => {
         return axiosClient.post("/hotspots", data);
     },
     delete: (id: number) => {
         return axiosClient.delete(`/hotspots/${id}`);
     },
-    createBulk: (hotspots: any[]) => {
+    createBulk: (hotspots: CreateHotspotDto[]) => {
         return axiosClient.post('/hotspots/bulk', hotspots);
     },
-    update: (id: number, data: any) => {
+    update: (id: number, data: Partial<CreateHotspotDto>) => {
         return axiosClient.patch(`/hotspots/${id}`, data);
     }
 };

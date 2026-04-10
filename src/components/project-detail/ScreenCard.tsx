@@ -1,12 +1,8 @@
+import type { Screen } from "@/shared/types";
 import { Sparkles, Edit3, Trash2, ArrowRight } from "lucide-react";
 
 interface ScreenCardProps {
-    screen: {
-        id: number;
-        name: string;
-        image_url: string;
-        hotspots?: any[];
-    };
+    screen: Screen;
     onClick: () => void;
 }
 

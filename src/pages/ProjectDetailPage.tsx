@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import appsApi from "@/api/apps";
 import screensApi from "@/api/screens";
+import type { App, Screen } from "@/shared/types";
 import { toast } from "sonner";
 
 // Refactored Components
@@ -14,28 +15,28 @@ import ProjectEmptyState from "@/components/project-detail/ProjectEmptyState";
 const ProjectDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [app, setApp] = useState<any>(null);
+    const [app, setApp] = useState<App | null>(null);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const fetchAppDetail = async () => {
+    const fetchAppDetail = useCallback(async () => {
         if (!id) return;
         try {
             setLoading(true);
             const res = await appsApi.getById(parseInt(id));
             setApp(res.data);
-        } catch (error) {
+        } catch {
             toast.error("Process data retrieval failed");
             navigate("/dashboard");
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, navigate]);
 
     useEffect(() => {
         fetchAppDetail();
-    }, [id]);
+    }, [fetchAppDetail]);
 
     const handleUploadScreen = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -51,7 +52,7 @@ const ProjectDetailPage = () => {
             await screensApi.upload(formData);
             toast.success("Screen uploaded successfully!");
             fetchAppDetail();
-        } catch (error) {
+        } catch {
             toast.error("Upload failed");
         } finally {
             setUploading(false);
@@ -70,13 +71,13 @@ const ProjectDetailPage = () => {
         );
     }
 
-    const totalHotspots = app?.screens?.reduce((acc: number, s: any) => acc + (s.hotspots?.length || 0), 0) || 0;
+    const totalHotspots = app?.screens?.reduce((acc: number, s: Screen) => acc + (s.hotspots?.length || 0), 0) || 0;
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             <ProjectHeader
-                name={app?.name}
-                description={app?.description}
+                name={app?.name || ""}
+                description={app?.description || ""}
                 uploading={uploading}
                 onBack={() => navigate("/dashboard")}
                 onUploadClick={() => fileInputRef.current?.click()}
@@ -107,11 +108,11 @@ const ProjectDetailPage = () => {
                     <ProjectEmptyState onUploadClick={() => fileInputRef.current?.click()} />
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {app?.screens?.map((screen: any) => (
+                        {app?.screens?.map((screen: Screen) => (
                             <ScreenCard
                                 key={screen.id}
                                 screen={screen}
-                                onClick={() => navigate(`/apps/${app.id}/screens/${screen.id}`)}
+                                onClick={() => navigate(`/apps/${id}/screens/${screen.id}`)}
                             />
                         ))}
                     </div>

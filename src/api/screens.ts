@@ -1,3 +1,4 @@
+import type { Screen } from "@/shared/types";
 import axiosClient from "./axiosClient";
 
 const screensApi = {
@@ -14,7 +15,7 @@ const screensApi = {
     getById: (id: number) => {
         return axiosClient.get(`/screens/${id}`);
     },
-    update: (id: number, data: any) => {
+    update: (id: number, data: Partial<Screen>) => {
         return axiosClient.patch(`/screens/${id}`, data);
     },
     delete: (id: number) => {

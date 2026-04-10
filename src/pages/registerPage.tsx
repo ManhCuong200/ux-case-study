@@ -2,8 +2,9 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { registerSchema } from "@/utils/schema"
+import { registerSchema, type RegisterSchemaType } from "@/utils/schema"
 import { useAuth } from "@/hooks/useAuth"
+import { AxiosError } from "axios"
 import Register from "@/components/auth/Register"
 import type { RegisterData } from "@/shared/types"
 
@@ -19,11 +20,11 @@ const RegisterPage = () => {
         setError,
         watch,
         formState: { errors },
-    } = useForm<any>({
+    } = useForm<RegisterSchemaType>({
         resolver: zodResolver(registerSchema)
     })
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: RegisterSchemaType) => {
         setLoading(true)
 
         try {
@@ -33,7 +34,8 @@ const RegisterPage = () => {
                 password: data.password
             } as RegisterData)
             navigate("/login")
-        } catch (err: any) {
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ message?: string }>;
             const message = err.response?.data?.message || "Registration failed. Try again."
             
             // Map server error to form fields for a better UX

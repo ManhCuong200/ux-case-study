@@ -1,3 +1,4 @@
+import type { CreateAppDto } from "@/shared/types";
 import axiosClient from "./axiosClient";
 
 const appsApi = {
@@ -14,7 +15,7 @@ const appsApi = {
             },
         });
     },
-    update: (id: number, data: any) => {
+    update: (id: number, data: Partial<CreateAppDto>) => {
         return axiosClient.patch(`/apps/${id}`, data);
     },
     delete: (id: number) => {

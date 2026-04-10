@@ -15,6 +15,8 @@ export interface RegisterData {
     email: string;
     password: string;
     fullName: string;
+    agreeTerms?: boolean;
+    confirmPassword?: string;
 }
 
 export interface LoginData {
@@ -29,6 +31,8 @@ export interface App {
     logo_url?: string;
     description?: string;
     screens?: Screen[];
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
 }
 
 export interface CreateAppDto {
@@ -70,5 +74,11 @@ export interface CreateHotspotDto {
     pos_y: number;
     type: string;
     screenId: number;
+}
+
+export interface ResetPasswordData {
+    email: string;
+    otp: string;
+    password?: string;
 }
 

@@ -1,14 +1,15 @@
+import type { App } from "@/shared/types";
 import { Plus, LayoutGrid, Microscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppCard from "@/components/dashboard/AppCard";
 
 interface DashboardProps {
-    apps: any[];
+    apps: App[];
     loading: boolean;
     onCreateClick: () => void;
     onAppClick: (id: number) => void;
     onDeleteClick: (id: number) => void;
-    onEditClick: (app: any) => void;
+    onEditClick: (app: App) => void;
 }
 
 const Dashboard = ({ apps, loading, onCreateClick, onAppClick, onDeleteClick, onEditClick }: DashboardProps) => {

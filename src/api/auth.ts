@@ -1,4 +1,4 @@
-import type { LoginData, LoginResponse, RegisterData } from "@/shared/types";
+import type { LoginData, LoginResponse, RegisterData, ResetPasswordData } from "@/shared/types";
 import axiosClient from "./axiosClient";
 
 const authApi = {
@@ -17,7 +17,7 @@ const authApi = {
     forgotPassword: (email: string) => {
         return axiosClient.post('/auth/forgot-password', { email });
     },
-    resetPassword: (data: any) => {
+    resetPassword: (data: ResetPasswordData) => {
         return axiosClient.post('/auth/reset-password', data);
     }
 }

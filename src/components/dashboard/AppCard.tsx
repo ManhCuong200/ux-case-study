@@ -1,16 +1,11 @@
+import type { App } from "@/shared/types";
 import { Calendar, Layers, Trash2, Edit2 } from "lucide-react";
 
 interface AppCardProps {
-  app: {
-    id: number;
-    name: string;
-    description?: string;
-    logo_url?: string;
-    createdAt?: string | Date;
-  };
+  app: App;
   onClick: (id: number) => void;
   onDelete: (id: number, e: React.MouseEvent) => void;
-  onEdit: (app: any, e: React.MouseEvent) => void;
+  onEdit: (app: App, e: React.MouseEvent) => void;
 }
 
 const AppCard = ({ app, onClick, onDelete, onEdit }: AppCardProps) => {

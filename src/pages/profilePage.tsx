@@ -31,7 +31,7 @@ const ProfilePage = () => {
             const res = await usersApi.updateAvatar(formData);
             updateUser(res.data);
             toast.success("Avatar updated successfully!");
-        } catch (error) {
+        } catch {
             toast.error("Failed to upload avatar");
         }
     };
@@ -43,7 +43,7 @@ const ProfilePage = () => {
             updateUser(res.data);
             toast.success("Profile updated!");
             setIsEditing(false);
-        } catch (error) {
+        } catch {
             toast.error("Failed to update profile");
         } finally {
             setSaving(false);

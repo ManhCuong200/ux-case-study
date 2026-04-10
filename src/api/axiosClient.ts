@@ -34,7 +34,7 @@ axiosClient.interceptors.response.use(
                 localStorage.setItem('access_token', res.data.accessToken);
                 // Thử lại request cũ với token mới
                 return axiosClient(originalRequest);
-            } catch (refreshError) {
+            } catch {
                 // Nếu refresh token cũng hết hạn -> Đá ra màn hình Login
                 localStorage.clear();
                 window.location.href = '/login';

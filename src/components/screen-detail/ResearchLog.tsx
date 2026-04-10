@@ -1,9 +1,10 @@
+import type { Hotspot } from "@/shared/types";
 import { Sparkles, Info, Trash2, Edit2 } from "lucide-react";
 
 interface ResearchLogProps {
-    hotspots: any[];
+    hotspots: Hotspot[];
     onDelete: (id: number) => void;
-    onEdit: (hotspot: any) => void;
+    onEdit: (hotspot: Hotspot) => void;
 }
 
 const ResearchLog = ({ hotspots, onDelete, onEdit }: ResearchLogProps) => {

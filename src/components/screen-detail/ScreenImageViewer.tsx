@@ -1,12 +1,13 @@
 import React, { forwardRef } from "react";
 import { Sparkles } from "lucide-react";
+import type { Hotspot } from "@/shared/types";
 import HotspotMarker from "./HotspotMarker";
 
 interface ScreenImageViewerProps {
     imageUrl: string;
     screenName: string;
     isAdding: boolean;
-    hotspots: any[];
+    hotspots: Hotspot[];
     onImageClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 

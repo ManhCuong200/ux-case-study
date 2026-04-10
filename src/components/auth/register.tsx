@@ -6,13 +6,14 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent } from "@/components/ui/card"
 import { Microscope, ShieldCheck, Loader2 } from "lucide-react"
 
-import { type FieldErrors, type UseFormRegister } from "react-hook-form"
+import { type FieldErrors, type UseFormRegister, type UseFormSetValue, type UseFormWatch } from "react-hook-form"
+import { type RegisterSchemaType } from "@/utils/schema"
 
 interface RegisterProps {
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
-  setValue: (name: string, value: any) => void;
-  watch: (name: string) => any;
+  register: UseFormRegister<RegisterSchemaType>;
+  errors: FieldErrors<RegisterSchemaType>;
+  setValue: UseFormSetValue<RegisterSchemaType>;
+  watch: UseFormWatch<RegisterSchemaType>;
   loading: boolean;
   error: string;
   onRegister: (e: React.FormEvent) => void;
@@ -136,7 +137,7 @@ const Register = ({
               <div className="flex items-start space-x-2">
                 <Checkbox 
                   id="agreeTerms" 
-                  onCheckedChange={(checked) => setValue("agreeTerms", checked)}
+                  onCheckedChange={(checked) => setValue("agreeTerms", checked === true)}
                   checked={!!agreeTerms}
                   className="mt-1 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" 
                 />

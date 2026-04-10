@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authApi from "@/api/auth";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 import ForgotPassword from "@/components/auth/ForgotPassword";
 
 const ForgotPasswordPage = () => {
@@ -19,8 +20,9 @@ const ForgotPasswordPage = () => {
             await authApi.forgotPassword(email);
             toast.success("OTP sent to your email!");
             setStep(2);
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to send OTP");
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ message?: string }>;
+            toast.error(err.response?.data?.message || "Failed to send OTP");
         } finally {
             setLoading(false);
         }
@@ -33,8 +35,9 @@ const ForgotPasswordPage = () => {
             await authApi.resetPassword({ email, otp, password });
             toast.success("Password changed successfully!");
             setStep(3);
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Invalid OTP or failed to reset");
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ message?: string }>;
+            toast.error(err.response?.data?.message || "Invalid OTP or failed to reset");
         } finally {
             setLoading(false);
         }

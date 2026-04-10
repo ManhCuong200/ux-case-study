@@ -1,11 +1,12 @@
-import { User, Mail, Shield, Camera, LogOut, Edit2, CheckCircle2 } from "lucide-react";
+import type { User } from "@/shared/types";
+import { User as UserIcon, Mail, Shield, Camera, LogOut, Edit2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
 
 interface UserProfileProps {
-    userData: any;
+    userData: User | null;
     fullName: string;
     onFullNameChange: (val: string) => void;
     isEditing: boolean;
@@ -109,7 +110,7 @@ const UserProfile = ({
                 <div className={`lg:col-span-2 space-y-8 ${!isEditing && 'opacity-60 pointer-events-none'}`}>
                     <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-6">
                         <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
-                            <User size={20} className="text-blue-600" />
+                            <UserIcon size={20} className="text-blue-600" />
                             Personal Information
                         </h2>
                         

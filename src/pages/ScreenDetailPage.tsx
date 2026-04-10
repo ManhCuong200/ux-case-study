@@ -1,10 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import screensApi from "@/api/screens";
 import hotspotsApi from "@/api/hotspots";
 import aiApi from "@/api/ai";
+import type { Hotspot, Screen } from "@/shared/types";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 // Refactored Components
 import ScreenHeader from "@/components/screen-detail/ScreenHeader";
@@ -15,8 +17,8 @@ import AddHotspotModal from "@/components/screen-detail/AddHotspotModal";
 const ScreenDetailPage = () => {
     const { id, screenId } = useParams();
     const navigate = useNavigate();
-    const [screen, setScreen] = useState<any>(null);
-    const [hotspots, setHotspots] = useState<any[]>([]);
+    const [screen, setScreen] = useState<Screen | null>(null);
+    const [hotspots, setHotspots] = useState<Hotspot[]>([]);
     const [loading, setLoading] = useState(true);
     const [isScanning, setIsScanning] = useState(false);
     
@@ -27,11 +29,11 @@ const ScreenDetailPage = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    const [editingHotspot, setEditingHotspot] = useState<any>(null);
+    const [editingHotspot, setEditingHotspot] = useState<Hotspot | null>(null);
     
     const imageRef = useRef<HTMLImageElement>(null);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         if (!screenId) return;
         try {
             setLoading(true);
@@ -46,24 +48,25 @@ const ScreenDetailPage = () => {
 
             setScreen(res.data);
             setHotspots(res.data.hotspots || []);
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ message?: string }>;
             console.error("Screen retrieval failure details:", {
-                url: error.config?.url,
-                status: error.response?.status,
-                message: error.message,
-                data: error.response?.data
+                url: err.config?.url,
+                status: err.response?.status,
+                message: err.message,
+                data: err.response?.data
             });
-            const message = error.response?.data?.message || "Blueprint link disrupted - 404 Path Error";
+            const message = err.response?.data?.message || "Blueprint link disrupted - 404 Path Error";
             toast.error(message);
             navigate(`/apps/${id}`);
         } finally {
             setLoading(false);
         }
-    };
+    }, [screenId, id, navigate]);
 
     useEffect(() => {
         fetchData();
-    }, [screenId]);
+    }, [fetchData]);
 
     const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!imageRef.current) return;
@@ -76,7 +79,7 @@ const ScreenDetailPage = () => {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (hotspot: any) => {
+    const handleEditClick = (hotspot: Hotspot) => {
         setEditingHotspot(hotspot);
         setTitle(hotspot.title);
         setContent(hotspot.content);
@@ -114,7 +117,7 @@ const ScreenDetailPage = () => {
             setTitle("");
             setContent("");
             setEditingHotspot(null);
-        } catch (error) {
+        } catch {
             toast.error(editingHotspot ? "Update failed" : "Mapping failed");
         } finally {
             setSubmitting(false);
@@ -126,7 +129,7 @@ const ScreenDetailPage = () => {
             await hotspotsApi.delete(hotspotId);
             setHotspots(hotspots.filter(h => h.id !== hotspotId));
             toast.success("Hotspot removed");
-        } catch (error) {
+        } catch {
             toast.error("Removal failed");
         }
     };
@@ -146,7 +149,7 @@ const ScreenDetailPage = () => {
             }
 
             // Map and save to DB
-            const formatted = aiHotspots.map((h: any) => ({
+            const formatted = aiHotspots.map((h: Partial<Hotspot>) => ({
                 ...h,
                 screenId: parseInt(screenId)
             }));
@@ -154,9 +157,10 @@ const ScreenDetailPage = () => {
             const saved = await hotspotsApi.createBulk(formatted);
             setHotspots([...hotspots, ...saved.data]);
             toast.success(`AI successfully identified ${aiHotspots.length} UX issues!`);
-        } catch (error: any) {
-            console.error("AI DISRUPTION:", error);
-            const msg = error.response?.data?.message || "AI Command Center unresponsive.";
+        } catch (error: unknown) {
+            const err = error as AxiosError<{ message?: string }>;
+            console.error("AI DISRUPTION:", err);
+            const msg = err.response?.data?.message || "AI Command Center unresponsive.";
             toast.error(msg);
         } finally {
             setIsScanning(false);
@@ -169,7 +173,7 @@ const ScreenDetailPage = () => {
             await screensApi.delete(parseInt(screenId));
             toast.success("Blueprint purged from system.");
             navigate(`/apps/${id}`);
-        } catch (error) {
+        } catch {
             toast.error("Deletion failed.");
         }
     };
@@ -181,7 +185,7 @@ const ScreenDetailPage = () => {
             const res = await screensApi.update(parseInt(screenId as string), { name: newName });
             setScreen(res.data);
             toast.success("Blueprint identity updated.");
-        } catch (error) {
+        } catch {
             toast.error("Rename failed.");
         }
     };
@@ -200,7 +204,7 @@ const ScreenDetailPage = () => {
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             <ScreenHeader 
-                name={screen?.name}
+                name={screen?.name || ""}
                 totalHotspots={hotspots.length}
                 isAdding={isAdding}
                 isScanning={isScanning}
@@ -214,8 +218,8 @@ const ScreenDetailPage = () => {
             <div className="flex flex-col lg:flex-row gap-8">
                 <ScreenImageViewer 
                     ref={imageRef}
-                    imageUrl={screen?.image_url}
-                    screenName={screen?.name}
+                    imageUrl={screen?.image_url || ""}
+                    screenName={screen?.name || ""}
                     isAdding={isAdding}
                     hotspots={hotspots}
                     onImageClick={handleImageClick}
